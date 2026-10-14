@@ -108,7 +108,7 @@ export const HapppyExtensionDrawer: React.FC<HapppyExtensionDrawerProps> = ({
     setGmailBody(emailPitch.body);
   };
 
-  const handleExecuteMultiTouch = () => {
+  const handleExecuteMultiTouch = async () => {
     if (!selectedTarget) return;
     setStep('executing');
     setExecutionLog([]);
@@ -132,15 +132,26 @@ export const HapppyExtensionDrawer: React.FC<HapppyExtensionDrawerProps> = ({
           log(`[LINKEDIN] ❌ Failed: ${response?.error}`);
         }
 
-        if (channelGmail) {
-          const gmailUrl = createGmailComposeUrl(
-            selectedTarget.workEmail,
-            gmailSubject,
-            gmailBody
-          );
-          window.open(gmailUrl, '_blank');
-          log(`[GMAIL] ✅ Compose window opened.`);
-        }
+   if (channelGmail) {
+  const token = getStoredToken();
+  if (!token) {
+    log(`[GMAIL] ❌ Not logged in — redirecting to Google...`);
+    loginWithGoogle();
+    return;
+  }
+
+  const result = await sendGmailEmail(
+    selectedTarget.workEmail,
+    gmailSubject,
+    gmailBody
+  );
+
+  if (result.success) {
+    log(`[GMAIL] ✅ Email sent to ${selectedTarget.workEmail}`);
+  } else {
+    log(`[GMAIL] ❌ Failed: ${result.error}`);
+  }
+}
 
         log(`[SUCCESS] Outreach dispatched for ${selectedTarget.fullName}`);
 
