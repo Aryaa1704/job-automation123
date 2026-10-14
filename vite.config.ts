@@ -20,8 +20,3 @@ export default defineConfig(() => {
     },
   };
 });
-server: {
-  headers: {
-    "Content-Security-Policy": "script-src 'self' 'wasm-unsafe-eval'"
-  }
-}

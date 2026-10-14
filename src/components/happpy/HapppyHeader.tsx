@@ -6,13 +6,15 @@ interface HapppyHeaderProps {
   dailyRunsTotal: number;
   onOpenPasteModal: () => void;
   onOpenExtensionGuide: () => void;
+  onOpenVercelDeploy?: () => void;
 }
 
 export const HapppyHeader: React.FC<HapppyHeaderProps> = ({
   dailyRunsUsed,
   dailyRunsTotal,
   onOpenPasteModal,
-  onOpenExtensionGuide
+  onOpenExtensionGuide,
+  onOpenVercelDeploy
 }) => {
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0">
@@ -39,7 +41,21 @@ export const HapppyHeader: React.FC<HapppyHeaderProps> = ({
       </div>
 
       {/* Action buttons */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
+        {/* Deploy to Vercel */}
+        {onOpenVercelDeploy && (
+          <button
+            onClick={onOpenVercelDeploy}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-950 hover:bg-slate-800 text-white rounded-md text-xs font-bold uppercase tracking-wider transition-colors shadow-2xs"
+            title="Deploy on Vercel"
+          >
+            <svg className="w-3 h-3 fill-current" viewBox="0 0 76 65">
+              <path d="M37.5274 0L75.0548 65H0L37.5274 0Z" />
+            </svg>
+            <span>DEPLOY VERCEL</span>
+          </button>
+        )}
+
         {/* Paste Job Link */}
         <button
           onClick={onOpenPasteModal}

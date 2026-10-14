@@ -40,6 +40,7 @@ export const HapppyConfigureView: React.FC<HapppyConfigureViewProps> = ({
     | 'auto_reply'
     | 'templates'
     | 'accounts'
+    | 'b2b_providers'
     | 'followup'
     | 'autorun'
     | 'outreach_mode'
@@ -50,13 +51,18 @@ export const HapppyConfigureView: React.FC<HapppyConfigureViewProps> = ({
   const [config, setConfig] = useState<AutoReplyConfig>(autoReplyConfig);
   const [linkedIn, setLinkedIn] = useState<LinkedInAccountConfig>(linkedInAccount);
   const [gmail, setGmail] = useState<GmailAccountConfig>(gmailAccount);
+  const [hunterKey, setHunterKey] = useState('demo_hunter_free_tier_25');
+  const [apolloKey, setApolloKey] = useState('demo_apollo_b2b_search');
+  const [dailyQuotaLimit, setDailyQuotaLimit] = useState(10);
+  const [jitterMinutes, setJitterMinutes] = useState(3);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   const subtabs = [
     { id: 'auto_reply', label: 'Auto Reply' },
     { id: 'templates', label: 'Message Templates' },
     { id: 'accounts', label: 'Connected Accounts (LinkedIn + Gmail)' },
-    { id: 'followup', label: 'Follow-up Settings' },
+    { id: 'b2b_providers', label: 'Contact Finder (Hunter.io / Apollo)' },
+    { id: 'followup', label: 'Rate Limiting & Follow-up' },
     { id: 'autorun', label: 'Auto Run' },
     { id: 'outreach_mode', label: 'Outreach Mode' },
     { id: 'extension', label: 'Browser Extension' },
@@ -918,8 +924,193 @@ export const HapppyConfigureView: React.FC<HapppyConfigureViewProps> = ({
         </div>
       )}
 
+      {/* TAB: Contact Finder & B2B Data Providers (Hunter.io, Apollo.io, Lusha) */}
+      {activeSubTab === 'b2b_providers' && (
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-base font-bold text-slate-900">
+                B2B Contact Finder & Enrichment Providers
+              </h2>
+              <p className="text-slate-500 text-xs mt-0.5">
+                Integrate Hunter.io, Apollo.io, or use the built-in corporate domain email engine.
+              </p>
+            </div>
+            <button
+              onClick={handleSaveAll}
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold"
+            >
+              Save API Keys
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Hunter.io API */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+              <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-amber-500 text-white font-bold flex items-center justify-center text-xs">
+                    H
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900">Hunter.io Integration</h3>
+                    <p className="text-[11px] text-slate-500">Domain search & MX email pattern finder</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-bold">
+                  25 FREE SEARCHES / MO
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <label className="block text-slate-700 font-semibold text-[11px]">
+                  Hunter.io API Key (Free tier supported)
+                </label>
+                <input
+                  type="password"
+                  value={hunterKey}
+                  onChange={(e) => setHunterKey(e.target.value)}
+                  placeholder="e.g. 8f92a104bc..."
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-mono text-slate-800 text-xs"
+                />
+                <p className="text-[10px] text-slate-400">
+                  Used to verify official company email syntax (@company.com) and find HR/Recruiting leads.
+                </p>
+              </div>
+            </div>
+
+            {/* Apollo.io API */}
+            <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-2xs">
+              <div className="flex items-center justify-between border-b pb-3 border-slate-100">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
+                    A
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900">Apollo.io B2B Enrichment</h3>
+                    <p className="text-[11px] text-slate-500">People search by Company + Job Title</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded text-[10px] font-bold">
+                  CONNECTED
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <label className="block text-slate-700 font-semibold text-[11px]">
+                  Apollo.io API Key
+                </label>
+                <input
+                  type="password"
+                  value={apolloKey}
+                  onChange={(e) => setApolloKey(e.target.value)}
+                  placeholder="e.g. apollo_live_..."
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg font-mono text-slate-800 text-xs"
+                />
+                <p className="text-[10px] text-slate-400">
+                  Searches engineering managers, hiring managers, and senior peers at the target company.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+            <div className="font-bold text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Contact Discovery Priority & Fallback Order</span>
+            </div>
+            <p className="text-slate-600 text-[11px] leading-relaxed">
+              1. <strong>Apollo API</strong>: Looks up verified Engineering Managers & Tech Leads.<br />
+              2. <strong>Hunter.io API</strong>: Verifies company email syntax and MX DNS deliverability.<br />
+              3. <strong>Built-in Domain Resolver</strong>: Fallbacks to known company formats ({`{first}.{last}@domain.com`}) when API credits are exhausted.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* TAB: Rate Limiting & Follow-up Settings */}
+      {activeSubTab === 'followup' && (
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-bold text-slate-900">
+              Rate Limiting, Safety & Follow-up Rules
+            </h2>
+            <button
+              onClick={handleSaveAll}
+              className="px-4 py-2 bg-slate-900 text-white rounded-lg text-xs font-bold"
+            >
+              Save Safety Rules
+            </button>
+          </div>
+
+          <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-6 shadow-2xs text-xs">
+            {/* Rate Limiting */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-slate-900 text-sm">Anti-Detection Daily Limits</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
+                  <label className="block font-bold text-slate-800 text-xs">
+                    Max Daily Outreach (Safety Cap)
+                  </label>
+                  <input
+                    type="number"
+                    max={20}
+                    min={5}
+                    value={dailyQuotaLimit}
+                    onChange={(e) => setDailyQuotaLimit(Number(e.target.value))}
+                    className="w-full p-2 bg-white border border-slate-300 rounded font-bold text-slate-900 text-sm text-center"
+                  />
+                  <p className="text-[10px] text-slate-500">
+                    Recommended: 10 jobs/day. Queue overflow automatically rolls over to the next day.
+                  </p>
+                </div>
+
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-1.5">
+                  <label className="block font-bold text-slate-800 text-xs">
+                    Randomized Human Jitter (Minutes)
+                  </label>
+                  <select
+                    value={jitterMinutes}
+                    onChange={(e) => setJitterMinutes(Number(e.target.value))}
+                    className="w-full p-2 bg-white border border-slate-300 rounded font-semibold text-slate-900 text-xs"
+                  >
+                    <option value={1}>1-2 minutes jitter</option>
+                    <option value={3}>2-5 minutes jitter (Recommended)</option>
+                    <option value={5}>5-10 minutes jitter (Ultra Safe)</option>
+                  </select>
+                  <p className="text-[10px] text-slate-500">
+                    Prevents automated detection by staggering messages like a real human browsing.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Exactly 72h Follow-up Rule */}
+            <div className="space-y-2 pt-2 border-t border-slate-100">
+              <h3 className="font-bold text-slate-900 text-sm">Automated 72-Hour Follow-up</h3>
+              <p className="text-slate-600 text-[11px] leading-relaxed">
+                If the recruiter or employee does not reply within <strong>exactly 72 hours (3 days)</strong>, the agent dispatches a polite 50-word nudge.
+              </p>
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-[11px] font-semibold">
+                ✓ Stop-on-Reply Enabled: If a reply is detected via Gmail API or LinkedIn, all pending follow-ups for that thread are immediately terminated!
+              </div>
+            </div>
+
+            {/* Data Access Scope & OAuth Security */}
+            <div className="space-y-2 pt-2 border-t border-slate-100">
+              <h3 className="font-bold text-slate-900 text-sm">OAuth Scope & Data Privacy</h3>
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-600 space-y-1">
+                <div>• <strong>Gmail OAuth Scope</strong>: Only reads replies to email threads sent by the agent. Never touches inbox, personal drafts, or attachments.</div>
+                <div>• <strong>LinkedIn Scope</strong>: Only monitors replies to agent-sent connection messages.</div>
+                <div>• <strong>Security</strong>: All tokens are AES-256 encrypted at rest and purged immediately upon disconnect.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Fallback other subtabs */}
-      {['followup', 'autorun', 'outreach_mode', 'blocked'].includes(activeSubTab) && (
+      {['autorun', 'outreach_mode', 'blocked'].includes(activeSubTab) && (
         <div className="bg-white border border-slate-200 rounded-xl p-6 text-xs text-slate-600">
           <div className="font-bold text-sm text-slate-900 mb-2 capitalize">
             {activeSubTab.replace('_', ' ')} Configuration

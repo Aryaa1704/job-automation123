@@ -15,6 +15,7 @@ import { HapppyHelpView } from './components/happpy/HapppyHelpView';
 import { HapppyRunAgentModal } from './components/happpy/HapppyRunAgentModal';
 import { HapppyExtensionDrawer } from './components/happpy/HapppyExtensionDrawer';
 import { ChromeExtensionModal } from './components/happpy/ChromeExtensionModal';
+import { VercelDeployModal } from './components/happpy/VercelDeployModal';
 
 import {
   happpyStorage,
@@ -63,11 +64,12 @@ export default function App() {
     companyName?: string;
   }>({});
   const [showExtensionModal, setShowExtensionModal] = useState(false);
+  const [showVercelModal, setShowVercelModal] = useState(false);
 
   // Daily quota
   const todayDateStr = new Date().toISOString().slice(0, 10);
   const runsToday = referralRuns.filter((r) => r.createdAt.startsWith(todayDateStr)).length;
-  const dailyTotal = 4;
+  const dailyTotal = 10;
 
   const handleOpenPasteModal = () => {
     setModalJobData({
@@ -109,6 +111,7 @@ export default function App() {
           dailyRunsTotal={dailyTotal}
           onOpenPasteModal={handleOpenPasteModal}
           onOpenExtensionGuide={() => setShowExtensionModal(true)}
+          onOpenVercelDeploy={() => setShowVercelModal(true)}
         />
 
         {/* Scrollable View Area */}
@@ -218,6 +221,12 @@ export default function App() {
           });
           setShowExtensionDrawer(true);
         }}
+      />
+
+      {/* Vercel Deployment Modal */}
+      <VercelDeployModal
+        isOpen={showVercelModal}
+        onClose={() => setShowVercelModal(false)}
       />
     </div>
   );
