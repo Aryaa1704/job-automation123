@@ -1,0 +1,6 @@
+{
+  "name": "Personal AI Job Agent",
+  "description": "A controlled, auditable system for job discovery, match scoring, fact-preserving resume tailoring, application tracking, and approved recruiter outreach.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

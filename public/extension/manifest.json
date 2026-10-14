@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Happpy Job Agent - 1-Click Referral Outreach",
+  "version": "1.0.0",
+  "description": "Run the referral outreach agent on any live job listing across LinkedIn, Naukri, Wellfound, Indeed, and career pages.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.linkedin.com/*",
+    "https://*.naukri.com/*",
+    "https://*.indeed.com/*",
+    "https://*.wellfound.com/*",
+    "https://boards.greenhouse.io/*",
+    "https://jobs.lever.co/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Run Referral Agent"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  }
+}
